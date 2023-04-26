@@ -43,7 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # My apps
-    'youtube_clone'
+    'youtube_clone',
+
+    # Third Party apps
+    'mptt',
 ]
 
 MIDDLEWARE = [
