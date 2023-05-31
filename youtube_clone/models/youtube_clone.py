@@ -1,21 +1,20 @@
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db.models import Model, CharField, TextField, ForeignKey, CASCADE, \
-    FileField, ManyToManyField, ImageField, IntegerField, PositiveIntegerField, DateTimeField, URLField
+    FileField, ManyToManyField, ImageField, DateTimeField, URLField, PositiveIntegerField
+
+from shared.django import TimeBaseModel, VideoBaseModel
 
 
-class Video(Model):
-    title = CharField(max_length=255)
-    description = TextField()
-    category = ForeignKey('youtube_clone.Category', CASCADE, db_index=True)
-    channel = ForeignKey('youtube_clone.Channel', CASCADE, db_index=True)
+class Video(VideoBaseModel):
     tags = ManyToManyField('youtube_clone.Tag', 'videos', blank=True)
     video_file = FileField(upload_to='videos/')
-    views_count = IntegerField(default=0, validators=[MinValueValidator(0)])
-    duration = PositiveIntegerField()  # video duration
+    duration = PositiveIntegerField(validators=[
+        MinValueValidator(0), MaxValueValidator(43200)
+    ], help_text='Duration in seconds (e.g. 43200 for 12 hours)')  # video duration
 
 
-class Channel(Model):
+class Channel(TimeBaseModel):
     name = CharField(max_length=255)
     description = TextField()
     owner = ForeignKey(User, CASCADE, 'owned_channels', db_index=True)
@@ -31,12 +30,9 @@ class LiveStream(Model):
     url = URLField()
 
 
-class ShortVideo(Model):
-    title = CharField(max_length=255)
-    description = TextField()
-    category = ForeignKey('youtube_clone.Category', CASCADE)
-    channel = ForeignKey('youtube_clone.Channel', CASCADE)
-    tags = ManyToManyField('youtube_clone.Tag', 'short_videos')
+class ShortVideo(VideoBaseModel):
+    tags = ManyToManyField('youtube_clone.Tag', 'short_videos', blank=True)
     video_file = FileField(upload_to='short_videos/')
-    views_count = IntegerField(default=0, validators=[MinValueValidator(0)])
-    duration = PositiveIntegerField()  # short video duration
+    duration = PositiveIntegerField(validators=[
+        MinValueValidator(0), MaxValueValidator(60)
+    ], help_text='Duration in seconds (e.g. 60 for 1 minute)')  # video duration

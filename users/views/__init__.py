@@ -1,0 +1,1 @@
+from users.views.google_register import GoogleAuthView, GoogleAuthCallbackView
