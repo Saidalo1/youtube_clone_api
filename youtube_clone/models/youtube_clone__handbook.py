@@ -9,7 +9,9 @@ from shared.django import TimeBaseModel
 
 class Category(TimeBaseModel):
     name = CharField(max_length=255)
-    description = TextField()
+
+    def __str__(self):
+        return self.name
 
 
 class VideoLikeDislikeUser(TimeBaseModel):
@@ -20,6 +22,13 @@ class VideoLikeDislikeUser(TimeBaseModel):
     user = ForeignKey(User, CASCADE, db_index=True)
     video = ForeignKey('youtube_clone.Video', CASCADE, db_index=True)
     choice = CharField(max_length=7, choices=LikeDislikeChoices.choices)
+
+    def __str__(self):
+        return f'{self.user} - {self.video} - {self.choice}'
+
+    @property
+    def is_like(self):
+        return self.choice == self.LikeDislikeChoices.LIKE
 
     class Meta:
         unique_together = ('user', 'video')
@@ -37,9 +46,15 @@ class ShortVideoLikeDislikeUser(TimeBaseModel):
     class Meta:
         unique_together = ('user', 'short_video')
 
+    def __str__(self):
+        return f'{self.user} - {self.short_video} - {self.choice}'
+
 
 class Tag(TimeBaseModel):
     name = CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
 
 
 class VideoComment(TimeBaseModel, MPTTModel):
@@ -51,6 +66,9 @@ class VideoComment(TimeBaseModel, MPTTModel):
     class MPTTMeta:
         order_insertion_by = ['id']
 
+    def __str__(self):
+        return self.content
+
 
 class ShortVideoComment(TimeBaseModel, MPTTModel):
     content = TextField()
@@ -60,6 +78,9 @@ class ShortVideoComment(TimeBaseModel, MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['id']
+
+    def __str__(self):
+        return self.content
 
 
 class VideoCommentLikeDislikeUser(TimeBaseModel):
@@ -74,6 +95,9 @@ class VideoCommentLikeDislikeUser(TimeBaseModel):
     class Meta:
         unique_together = ('user', 'video_comment')
 
+    def __str__(self):
+        return f'{self.user} - {self.video_comment} - {self.choice}'
+
 
 class ShortVideoCommentLikeDislikeUser(TimeBaseModel):
     class LikeDislikeChoices(TextChoices):
@@ -87,11 +111,18 @@ class ShortVideoCommentLikeDislikeUser(TimeBaseModel):
     class Meta:
         unique_together = ('user', 'short_video_comment')
 
+    def __str__(self):
+        return f'{self.user} - {self.short_video_comment} - {self.choice}'
+
 
 class Playlist(TimeBaseModel):
     title = CharField(max_length=255)
     description = TextField()
     videos = ManyToManyField('youtube_clone.Video')
+    channel = ForeignKey('youtube_clone.Channel', CASCADE, db_index=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Subscription(TimeBaseModel):
@@ -101,6 +132,9 @@ class Subscription(TimeBaseModel):
     class Meta:
         unique_together = ['user', 'channel']
 
+    def __str__(self):
+        return f'{self.user} - {self.channel}'
+
 
 class Map(TimeBaseModel):
     title = CharField(max_length=255)
@@ -108,3 +142,6 @@ class Map(TimeBaseModel):
     latitude = DecimalField(max_digits=9, decimal_places=6)
     longitude = DecimalField(max_digits=9, decimal_places=6)
     zoom_level = PositiveIntegerField()
+
+    def __str__(self):
+        return self.title

@@ -153,3 +153,18 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_CALLBACK_URL = env('GOOGLE_OAUTH2_CALLBACK_URL')
 
 # Redirect URL after successfully login
 LOGIN_REDIRECT_URL = '/'
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    }
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
